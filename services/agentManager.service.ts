@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 
+import { messageCounter, tokenUsageGauge } from "metrics/prometheus";
 import { countTokens } from "@utils/tokenUtils";
 import { fetchSimilarMessages, storeMessage } from "./memory.service";
 import { askOpenAI } from "./openai.service";
@@ -26,6 +27,8 @@ export const handleChatRequest = async (req: Request, res: Response) => {
   if (totalTokens > 3500) {
     prompt.splice(1, 1);
   }
+  messageCounter.inc();
+  tokenUsageGauge.set(totalTokens);
 
   try {
     const reply = await askOpenAI(prompt);
