@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 
+import { countTokens } from "@utils/tokenUtils";
 import { fetchSimilarMessages, storeMessage } from "./memory.service";
 import { askOpenAI } from "./openai.service";
-import { countTokens } from "../utils/tokenUtils";
 
 export const handleChatRequest = async (req: Request, res: Response) => {
   const agentId = req.params.agentId;

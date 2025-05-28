@@ -1,4 +1,3 @@
-// utils/tokenUtils.ts
 import { get_encoding } from "gpt-tokenizer";
 
 const encoder = get_encoding("gpt-3.5-turbo");
