@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import { fetchSimilarMessages, storeMessage } from "./memory.service";
 import { askOpenAI } from "./openai.service";
+import { countTokens } from "../utils/tokenUtils";
 
 export const handleChatRequest = async (req: Request, res: Response) => {
   const agentId = req.params.agentId;
@@ -18,6 +19,13 @@ export const handleChatRequest = async (req: Request, res: Response) => {
     ...history.map((h) => ({ role: h.role, content: h.content })),
     { role: "user", content: userMessage },
   ];
+  const totalTokens = prompt.reduce(
+    (acc, msg) => acc + countTokens(msg.content),
+    0
+  );
+  if (totalTokens > 3500) {
+    prompt.splice(1, 1);
+  }
 
   try {
     const reply = await askOpenAI(prompt);
