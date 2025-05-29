@@ -1,0 +1,9 @@
+{
+  "function_call": {
+    "name": "createInvoice",
+    "arguments": {
+      "clientId": "abc123",
+      "amount": 5500
+    }
+  }
+}
