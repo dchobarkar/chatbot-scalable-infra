@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 
+import { messageQueue } from "queue/messageQueue";
 import { getAgentById } from "@services/agentRegistry";
+import { logger } from "@utils/logger";
 
 const router = Router();
 
@@ -13,10 +15,16 @@ router.post("/:agentId", async (req: Request, res: Response) => {
   if (!agent) return res.status(404).json({ error: "Agent not found" });
 
   try {
-    const reply = await agent.processMessage(message, sessionId);
-    res.json({ reply });
+    await messageQueue.add("process-message", {
+      agentId,
+      sessionId,
+      userMessage: message,
+    });
+
+    res.json({ status: "queued" });
   } catch (e) {
-    res.status(500).json({ error: "Failed to process message" });
+    logger.error("Failed to queue message", { error: e });
+    res.status(500).json({ error: "Failed to queue message" });
   }
 });
 
